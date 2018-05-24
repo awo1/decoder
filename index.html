@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Some data decoder</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link active" id="nav-encode-tab" data-toggle="tab" href="#nav-encode" role="tab" aria-controls="nav-encode" aria-selected="true">Encode</a>
+            <a class="nav-item nav-link" id="nav-decode-tab" data-toggle="tab" href="#nav-decode" role="tab" aria-controls="nav-decode" aria-selected="false">Decode</a>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent" style="padding: 30px 0;">
+        <div class="tab-pane fade show active" id="nav-encode" role="tabpanel" aria-labelledby="nav-encode-tab">
+            <form id="encode">
+                <div class="form-group form-check">
+                    <input name="1" type="checkbox" class="form-check-input" id="enabled">
+                    <label class="form-check-label" for="enabled">Enabled</label>
+                </div>
+                <div class="form-group">
+                    <label for="checkDivId">Check div ID</label>
+                    <input name="2" type="text" class="form-control" id="checkDivId" placeholder="Enter <div> ID for checking valid response">
+                </div>
+                <div class="form-group">
+                    <label for="redirectorUrl">Redirector URL</label>
+                    <input name="3" type="text" class="form-control" id="redirectorUrl" aria-describedby="redirectorUrlHelp" placeholder="Enter redirector URL">
+                </div>
+                <button type="submit" class="btn btn-dark">Encode</button>
+            </form>
+        </div>
+        <div class="tab-pane fade" id="nav-decode" role="tabpanel" aria-labelledby="nav-decode-tab">
+            <form id="decode">
+                <div class="form-group">
+                    <label for="hash">Hash</label>
+                    <textarea class="form-control" id="hash" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-dark">Decode</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+<script type="text/javascript">
+    $("#encode").submit(function(event) {
+        event.preventDefault();
+        var form = $("form#encode");
+        var formElem = form.find("input:not([type=submit],[type=button]),select,textarea");
+        var salt = (Math.random()+1).toString(16).substring(2,4);
+        var data = {};
+
+        formElem.each(function(){
+            if ($(this).attr("type").toLowerCase() === "checkbox") {
+                if ($(this).is(":checked")) {
+                    data[$(this).attr("name")] = 1;
+                } else {
+                    data[$(this).attr("name")] = 0;
+                }
+            } else {
+                data[$(this).attr("name")] = $(this).val();
+            }
+        });
+
+        data = JSON.stringify(data);
+
+        form.append("<div class=\"alert alert-success\" role=\"alert\" style=\"margin: 30px 0;\">" + data + "<hr>" + salt + window.btoa(data) + "</div>");
+    });
+
+    $("#decode").submit(function(event) {
+        event.preventDefault();
+        var form = $("form#decode");
+        var data = form.find('#hash').val().substring(2);
+
+        form.append("<div class=\"alert alert-success\" role=\"alert\" style=\"margin: 30px 0;\">" + decodeURIComponent(window.atob(data)) + "</div>");
+    });
+</script>
+</body>
+</html>
